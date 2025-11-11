@@ -1,0 +1,221 @@
+<div class="bg-slate-900 text-white h-screen flex flex-col">
+    <!-- Header -->
+    <header class="bg-slate-800 shadow-lg p-4">
+        <div class="container mx-auto flex items-center justify-between relative">
+            <!-- Logo on the left -->
+            <div class="absolute left-0">
+                <img src="static/haizealogoinverse750px.png" alt="Logo" class="h-12 w-36">
+            </div>
+            
+            <!-- Centered title container -->
+            <div class="flex-1 flex justify-center items-center">
+                <div class="flex items-center gap-4">
+                    <div class="w-8 h-8 bg-slate-800 rounded-full"></div>
+                    <h1 class="text-3xl font-bold">Land use and biodiversity trends in the ACT</h1>
+                    <div class="w-8 h-8 bg-slate-800 rounded-full"></div>
+                </div>
+            </div>
+
+            <!-- Avatar dropdown on the right -->
+            <div class="absolute right-0">
+                {% include 'avatar_dropdown.html' %}
+            </div>
+        </div>
+    </header>
+    <div id="left-map"></div>
+    <div id="right-map"></div>
+    <!-- Main Content -->
+    <div class="flex-1 container mx-auto p-4 overflow-hidden max-w-[2000px]">
+        <div class="grid grid-cols-[250px_1fr_250px] gap-4 h-full">
+            <!-- Left Controls -->
+            <div class="space-y-4">
+                <select
+                    class="w-full bg-slate-700 border border-slate-600 rounded-md p-2"
+                    name = "left-layer"
+                    hx-post="/update-left-layer"
+                    hx-target="#left-map"
+                    hx-swap="none"
+                    hx-trigger="load, change"
+                >
+                    <option value="veg" selected>Selected Vegetation Types</option>
+                    <option value="aerial04">Aerial photography (2004)</option>
+                    <option value="ai04">AI mapping (2004)</option>
+                    <option value="aerial12">Aerial photography (2012)</option>
+                    <option value="ai12">AI mapping (2012)</option>
+                    <option value="aerial15">Aerial photography (2015)</option>
+                    <option value="ai15">AI mapping (2015)</option>
+                    <option value="aerial21">Aerial photography (2021)</option>
+                    <option value="ai21">AI mapping (2021)</option>
+                    <option value="trend1">Trend - unprotected soil (2004-2023)</option>
+                    <option value="trend2">Trend - vegetation cover (2004-2023)</option>
+                    <option value="trend3">Trend - vegetation greenness (NDVI)</option>
+                    <option value="trend4">Trend - leaf area (2004-2023)</option>
+                    <option value="trend5">Trend - growth rate (GPP) (2004-2023)</option>
+                    <option value="trend6">Trend - woody cover (2004-2023)</option>
+                    <option value="none">None</option>
+                </select>
+                <div id="left_legend-container"
+                        hx-post="/colour_palette"
+                        hx-trigger="load, 
+                                change from:select[name='left-layer']"
+                        hx-swap="innerHTML"
+                        hx-include="[name='left-layer']"
+                        >
+                    <!-- Initial empty state -->
+                    <div class="bg-slate-800 p-4 rounded-md">
+                        <p class="text-white">Loading legend...</p>
+                    </div>
+                </div>
+                <!--button class="w-full bg-emerald-600 hover:bg-emerald-700 p-2 rounded-md">
+                    Download
+                </button-->
+            </div>
+
+            <!-- Map Container -->
+            <div id="map" class="map-container rounded-lg overflow-hidden" hx-trigger="load" hx-post="load-geojson" hx-swap="none"></div>
+
+            <!-- Right Controls -->
+            <div class="space-y-4">
+                <select
+                    class="w-full bg-slate-700 border border-slate-600 rounded-md p-2"
+                    name = "right-layer"
+                    hx-post="/update-right-layer"
+                    hx-target="#right-map"
+                    hx-swap="none"
+                    hx-trigger="load, change"
+                >
+                    <option value="veg" >Selected Vegetation Types</option>
+                    <option value="aerial04">Aerial photography (2004)</option>
+                    <option value="ai04" selected>AI mapping (2004)</option>
+                    <option value="aerial12">Aerial photography (2012)</option>
+                    <option value="ai12">AI mapping (2012)</option>
+                    <option value="aerial15">Aerial photography (2015)</option>
+                    <option value="ai15">AI mapping (2015)</option>
+                    <option value="aerial21">Aerial photography (2021)</option>
+                    <option value="ai21">AI mapping (2021)</option>
+                    <option value="trend1">Trend - unprotected soil (2004-2023)</option>
+                    <option value="trend2">Trend - vegetation cover (2004-2023)</option>
+                    <option value="trend3">Trend - vegetation greenness (NDVI)</option>
+                    <option value="trend4">Trend - leaf area (2004-2023)</option>
+                    <option value="trend5">Trend - growth rate (GPP) (2004-2023)</option>
+                    <option value="trend6">Trend - woody cover (2004-2023)</option>
+                    <option value="none">None</option>
+                </select>
+                <div id="right_legend-container"
+                        hx-post="/colour_palette"
+                        hx-trigger="load,
+                                change from:select[name='right-layer']"
+                        hx-swap="innerHTML"
+                        hx-include="[name='right-layer']"
+                        >
+                    <!-- Initial empty state -->
+                    <div class="bg-slate-800 p-4 rounded-md">
+                        <p class="text-white">Loading legend...</p>
+                    </div>
+                </div>
+                <!--button class="w-full bg-emerald-600 hover:bg-emerald-700 p-2 rounded-md">
+                    Download
+                </button-->
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-slate-800 p-4">
+        <div class="container mx-auto flex justify-end items-center">
+            <img src="static/terrakiologoinlineinverse375px.png" alt="terrak.io" class="h-6">
+            <span class="ml-2 text-slate-400"> > the world in your hands</span>
+        </div>
+    </footer>
+
+    <script>
+        
+        // Initialize the map
+        const map = L.map('map').setView([-35.5, 149], 10);
+
+        const baseLayer = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        let leftLayer = null // No .addTo(map) here
+
+
+        let rightLayer = null
+
+        // Add the side-by-side control
+        let sideBySideControl = null; // Declare this outside the event handler
+
+        // HTMX handlers for layer updates
+        htmx.on('htmx:afterRequest', function(evt) {
+            if (evt.detail.xhr.status === 200) {
+                // Only parse as JSON for map updates
+                if (evt.detail.target.id === 'map') {
+                    const geojsonData = JSON.parse(evt.detail.xhr.response);
+                    if (window.geoJsonLayer) {
+                        map.removeLayer(window.geoJsonLayer);
+                    }
+                    // Create and add layers to map
+                    window.geoJsonLayer_dist = L.geoJSON(geojsonData.district, {
+                        style: geojsonData.style_dist
+                    }).addTo(map);  // Add to map immediately
+                    window.geoJsonLayer_div = L.geoJSON(geojsonData.division, {
+                        style: geojsonData.style_div
+                    }).addTo(map);  // Add to map immediately
+
+                    layertControl = L.control.layers(null, {
+                        'Districts': window.geoJsonLayer_dist, 
+                        "Divisions": window.geoJsonLayer_div
+                    }).addTo(map);
+                }
+
+                if (evt.detail.target.id === 'left-map' || evt.detail.target.id === 'right-map') {
+                    const response = JSON.parse(evt.detail.xhr.response);
+                    if (response.type === "expression") {
+                        layer = L.tileLayer.wms('https://terrakio-server-candidate-d4w6vamyxq-ts.a.run.app/wms', {
+                            layers: 'layer',
+                            expression: response.expression,
+                            cmap: response.cmap,
+                            vmin: response.vmin,
+                            vmax: response.vmax,
+                            format: 'image/png',
+                            opacity: 0.9,
+                            transparent: true
+                        });
+                    }
+                    else if (response.type === 'tile'){
+                        layer = L.tileLayer(response.url)
+                    }
+                    layer.addTo(map);
+                    if (evt.detail.target.id === 'left-map') {
+                        //replace left layer
+                        if (leftLayer) {
+                            sideBySideControl.remove()
+                            map.removeLayer(leftLayer)
+                        }
+                        leftLayer = layer
+                        if (sideBySideControl) {
+                            sideBySideControl.setLeftLayer(leftLayer)
+                        }
+                    } else if (evt.detail.target.id === 'right-map') {
+                        //replace right layer
+                        if (rightLayer) {
+                            sideBySideControl.remove()
+                            map.removeLayer(rightLayer)
+                        }
+                        rightLayer = layer
+                        if (sideBySideControl) {
+                            sideBySideControl.setRightLayer(rightLayer)
+                        }
+                    }
+                    
+                    if (!sideBySideControl && leftLayer && rightLayer) {
+                        sideBySideControl = L.control.sideBySide(leftLayer, rightLayer).addTo(map);
+                    }
+                    else if (sideBySideControl){
+                        sideBySideControl.addTo(map)
+                    }
+                }
+            }
+        });
+    </script>
+</div>

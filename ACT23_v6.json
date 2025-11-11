@@ -1,0 +1,4 @@
+{"products": ["actbioclf23_v6"], 
+"path": "gs://terrakio-models/virtual_dataset_loaders", 
+"dates_iso8601": ["2023-01-01T00:00:00+00:00"], 
+"padding": 96, "input": "ACTRGB23_filtered.red, ACTRGB23_filtered.green, ACTRGB23_filtered.blue", "name": "Act23_v6"}

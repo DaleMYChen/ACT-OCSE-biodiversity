@@ -1,0 +1,119 @@
+.leaflet-sbs-range {
+    position: absolute;
+    top: 50%;
+    width: 100%;
+    z-index: 999;
+    -webkit-appearance: none;
+    display: inline-block!important;
+    vertical-align: middle;
+    height: 0;
+    padding: 0;
+    margin: 0;
+    border: 0;
+    background: rgba(0, 0, 0, 0.25);
+    min-width: 100px;
+    cursor: col-resize;
+    pointer-events: all;
+    z-index: 999;
+}
+
+.leaflet-sbs-divider {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 50%;
+    margin-left: -1px;  /* Reduced from -2px */
+    width: 2px;         /* Reduced from 4px */
+    background-color: #ffffff;
+    opacity: 0.8;
+    pointer-events: none;
+    z-index: 999;
+    box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+/* Browser thumbs */
+.leaflet-sbs-range::-ms-thumb {
+    -webkit-appearance: none;
+    pointer-events: all;
+    border: 2px solid #ffffff;
+    height: 40px;  /* Reduced from 60px */
+    width: 40px;   /* Reduced from 60px */
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: col-resize;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.leaflet-sbs-range::-moz-range-thumb {
+    -webkit-appearance: none;
+    pointer-events: all;
+    border: 2px solid #ffffff;
+    height: 40px;  /* Reduced from 60px */
+    width: 40px;   /* Reduced from 60px */
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: col-resize;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+.leaflet-sbs-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    pointer-events: all;
+    border: 2px solid #ffffff;
+    height: 40px;  /* Reduced from 60px */
+    width: 40px;   /* Reduced from 60px */
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.8);
+    cursor: col-resize;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+}
+
+/* Hover states */
+.leaflet-sbs-range::-ms-thumb:hover {
+    background: #ffffff;
+}
+
+.leaflet-sbs-range::-moz-range-thumb:hover {
+    background: #ffffff;
+}
+
+.leaflet-sbs-range::-webkit-slider-thumb:hover {
+    background: #ffffff;
+}
+
+/* Browser tracks */
+.leaflet-sbs-range::-ms-track {
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+    height: 40px;  /* Reduced from 60px */
+    cursor: col-resize;
+}
+
+.leaflet-sbs-range::-moz-range-track {
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+    height: 40px;  /* Reduced from 60px */
+    cursor: col-resize;
+}
+
+.leaflet-sbs-range::-webkit-slider-runnable-track {
+    background: transparent;
+    border-color: transparent;
+    color: transparent;
+    height: 40px;  /* Reduced from 60px */
+    cursor: col-resize;
+}
+
+/* Smaller grip handle */
+.leaflet-sbs-divider::after {
+    content: '≡';
+    color: #ffffff;
+    font-size: 20px;  /* Reduced from 30px */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) rotate(90deg);
+    text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
